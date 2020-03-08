@@ -80,3 +80,13 @@ def img2chars(img):
 
     return res
 
+def imgs2chars(imgs):
+    video_chars = []
+    for img in imgs:
+        video_chars.append(img2chars(img))
+
+    return video_chars
+
+
+
+
