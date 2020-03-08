@@ -11,3 +11,6 @@ def fama(text):
     return ''.join(result)
 p=input()
 print(fama(p))
+#随便修改一下下
+i want to change a
+a change to want i
