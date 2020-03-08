@@ -54,3 +54,29 @@ def video2imgs(video_name, size, seconds):
     cap.release()
 
     return img_list, fps
+def img2chars(img):
+    """
+    :param img: numpy.ndarray, 图像矩阵
+    :return: 字符串的列表：图像对应的字符画，其每一行对应图像的一行像素
+    """
+    res = []
+
+    # 灰度是用8位表示的，最大值为255。
+    # 这里将灰度转换到0-1之间
+    percents = img / 255
+
+    # 将灰度值进一步转换到 0 到 (len(pixels) - 1) 之间，这样就和 pixels 里的字符对应起来了
+    indexes = (percents * (len(pixels) - 1)).astype(np.int)
+
+    # 要注意这里的顺序和 之前的 size 刚好相反
+    height, width = img.shape
+    for row in range(height):
+        line = ""
+        for col in range(width):
+            index = indexes[row][col]
+            # 添加字符像素（最后面加一个空格，是因为命令行有行距却没几乎有字符间距，用空格当间距）
+            line += pixels[index] + " "
+        res.append(line)
+
+    return res
+
