@@ -109,6 +109,81 @@ def play_video(video_chars, frames_rate):
             print(video_chars[pic_i][line_i])
         time.sleep(1 / frames_rate)  # 粗略地控制播放速度。
         subprocess.call("clear")
+        def dump(obj, file_name):
+    """
+    将指定对象，以file_nam为名，保存到本地
+    """
+    with open(file_name, 'wb') as f:
+        pickle.dump(obj, f)
+    return
+
+
+def load(filename):
+    """
+    从当前文件夹的指定文件中load对象
+    """
+    with open(filename, 'rb') as f:
+        return pickle.load(f)
+
+
+def get_video_chars(video_path, size, seconds):
+    """
+    返回视频对应的字符视频
+    """
+    video_dump = Path(video_path).with_suffix(".pickle").name
+
+    # 如果 video_dump 已经存在于当前文件夹，就可以直接读取进来了
+    if Path(video_dump).exists():
+        print("发现该视频的转换缓存，直接读取")
+        video_chars, fps = load(video_dump)
+    else:
+        print("未发现缓存，开始字符视频转换")
+
+        print("开始逐帧读取")
+        # 视频转字符动画
+        imgs, fps = video2imgs(video_path, size, seconds)
+
+        print("视频已全部转换到图像， 开始逐帧转换为字符画")
+        video_chars = imgs2chars(imgs)
+
+        print("转换完成，开始缓存结果")
+        # 把[video_chars, fps]保存下来
+        dump([video_chars, fps], video_dump)
+        print("缓存完毕")
+
+    return video_chars, fps
+
+
+def play_audio(video_path):
+    def call():
+        # 使用 invoke 库调用本地方法
+        # 之所以不用 subprocess，是因为它没有 hide 属性，调用 mpv 时，即使将输出流重定向了，还是会影响字符画的播放。
+        invoke.run(f"mpv --no-video {video_path}", hide=True, warn=True)
+
+    # 这里创建子线程来执行音乐播放指令，因为 invoke.run() 是一个阻塞的方法，要同时播放字符画和音乐的话，就要用多线程/进程。
+    p = Thread(target=call)
+    p.setDaemon(True)
+    p.start()
+
+
+def main():
+    # 宽，高
+    size = (64, 48)
+    # 视频路径，换成你自己的
+    video_path = "E:\218921.mp4"
+    seconds = 30  # 只转换三十秒
+    video_chars, fps = get_video_chars(video_path, size, seconds)
+
+    # 播放音轨
+    play_audio(video_path)
+
+    # 播放视频
+    play_video(video_chars, fps)
+
+
+if __name__ == "__main__":
+    main()
+
 
 
 
