@@ -88,5 +88,28 @@ def imgs2chars(imgs):
     return video_chars
 
 
+def play_video(video_chars, frames_rate):
+    
+     
+     """
+     播放字符视频，clear版
+     :param video_chars: 字符画的列表，每个元素为一帧
+     :param frames_rate: 帧率
+     :return: None
+     """
+     # 导入需要的模块（放这里是为了演示，建议移出去）
+
+
+     # 获取字符画的尺寸
+    width, height = len(video_chars[0][0]),len(video_chars[0])
+    for pic_i in range(len(video_chars)):
+        # 显示 pic_i，即第i帧字符画
+        for line_i in range(height):
+             # 将pic_i的第i行写入第i列。
+            print(video_chars[pic_i][line_i])
+        time.sleep(1 / frames_rate)  # 粗略地控制播放速度。
+        subprocess.call("clear")
+
+
 
 
